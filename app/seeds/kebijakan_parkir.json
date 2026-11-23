@@ -1,0 +1,47 @@
+{
+  "scenario_id": "kebijakan_parkir",
+  "title": "Kebijakan Parkir Kampus",
+  "premise": "Rektorat universitas berencana menaikkan tarif parkir mobil dari Rp3.000 menjadi Rp10.000 per hari dan mengalihkan subsidi ke jalur sepeda serta shuttle bus kampus. Tiga pemangku kepentingan utama harus bernegosiasi sebelum keputusan final diumumkan minggu depan.",
+  "world_rules": "Kamu adalah narator simulasi kebijakan kampus berbahasa Indonesia. Simulasi ini bersifat eksploratif dan non-preskriptif. Hasil simulasi BUKAN rekomendasi kebijakan nyata. Jangan memihak satu pihak.",
+  "rng_seed": 202,
+  "actor_cores": [
+    {
+      "actor_id": "wakil_rektor",
+      "name": "Prof. Hartono",
+      "role": "Wakil Rektor Bidang Umum",
+      "traits": ["pragmatis", "berorientasi data", "menghindari konfrontasi publik"],
+      "backstory": "Bertanggung jawab atas pengelolaan fasilitas kampus selama 4 tahun. Mendapat tekanan dari rektor untuk meningkatkan pendapatan non-SPP dan mengurangi kemacetan internal kampus."
+    },
+    {
+      "actor_id": "bem_farhan",
+      "name": "Farhan",
+      "role": "Ketua BEM Universitas",
+      "traits": ["vokal", "idealis", "pandai menggalang dukungan"],
+      "backstory": "Mahasiswa semester 7 yang terpilih dengan platform keadilan biaya kampus. Mendapat banyak keluhan dari mahasiswa komuter yang bergantung pada kendaraan pribadi karena jalur transportasi umum ke kampus sangat terbatas."
+    },
+    {
+      "actor_id": "kantin_bu_sri",
+      "name": "Bu Sri",
+      "role": "Koordinator Pedagang Kantin Kampus",
+      "traits": ["protektif terhadap pedagang kecil", "negosiator ulet", "skeptis terhadap birokrasi"],
+      "backstory": "Mewakili 23 pedagang kantin dan warung di area kampus. Khawatir kenaikan tarif parkir akan mengurangi jumlah pengunjung luar yang makan di kantin kampus, menurunkan omzet pedagang kecil."
+    }
+  ],
+  "initial_state": {
+    "narrative": "Ruang rapat lantai 3 Gedung Rektorat, Senin pagi. Prof. Hartono membuka rapat konsultasi publik terbatas dengan membagikan dokumen analisis biaya-manfaat setebal 12 halaman. Farhan, yang baru tiba dengan jaket BEM-nya, langsung membuka halaman proyeksi dampak terhadap mahasiswa komuter. Bu Sri, duduk di ujung meja dengan map berisi tanda tangan 23 pedagang kantin, menunggu giliran bicara sambil membaca angka proyeksi penurunan pengunjung.",
+    "arc_summary": "Rapat konsultasi tarif parkir kampus dimulai. Tiga pihak berkepentingan bersiap menyampaikan posisi masing-masing.",
+    "actor_states": [
+      {"actor_id": "wakil_rektor", "mood": 2, "energy": 3, "safety": 3, "social": 3, "esteem": 4, "location": "Ruang rapat rektorat", "ticking_clock": "Keputusan final harus diumumkan Jumat depan"},
+      {"actor_id": "bem_farhan", "mood": 2, "energy": 4, "safety": 3, "social": 4, "esteem": 3, "location": "Ruang rapat rektorat", "ticking_clock": "Rapat BEM darurat besok sore"},
+      {"actor_id": "kantin_bu_sri", "mood": 1, "energy": 3, "safety": 2, "social": 3, "esteem": 3, "location": "Ruang rapat rektorat", "ticking_clock": "Pedagang menunggu kabar hari ini"}
+    ],
+    "relation_edges": [
+      {"source_actor_id": "wakil_rektor", "target_actor_id": "bem_farhan", "trust": 1, "affinity": 0, "tension": 2, "bond_event": ""},
+      {"source_actor_id": "bem_farhan", "target_actor_id": "wakil_rektor", "trust": 0, "affinity": -1, "tension": 3, "bond_event": "Pernah berdebat soal kenaikan UKT tahun lalu"},
+      {"source_actor_id": "wakil_rektor", "target_actor_id": "kantin_bu_sri", "trust": 2, "affinity": 1, "tension": 1, "bond_event": ""},
+      {"source_actor_id": "kantin_bu_sri", "target_actor_id": "wakil_rektor", "trust": 1, "affinity": 0, "tension": 2, "bond_event": "Janji renovasi kantin belum ditepati"},
+      {"source_actor_id": "bem_farhan", "target_actor_id": "kantin_bu_sri", "trust": 2, "affinity": 2, "tension": 0, "bond_event": ""},
+      {"source_actor_id": "kantin_bu_sri", "target_actor_id": "bem_farhan", "trust": 2, "affinity": 1, "tension": 0, "bond_event": ""}
+    ]
+  }
+}

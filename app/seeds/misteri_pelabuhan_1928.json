@@ -1,0 +1,47 @@
+{
+  "scenario_id": "misteri_pelabuhan_1928",
+  "title": "Misteri Pelabuhan 1928",
+  "premise": "Tahun 1928, pelabuhan Tanjung Priok menjadi titik pertemuan berbagai kepentingan: perdagangan rempah, pergerakan nasionalis muda, dan jaringan intelijen kolonial. Seorang jurnalis muda Melayu menemukan catatan misterius di gudang pelabuhan yang bisa mengubah nasib sebuah kapal dan penumpangnya.",
+  "world_rules": "Kamu adalah narator fiksi sejarah interaktif berbahasa Indonesia berlatar 1928 Hindia Belanda. Gunakan bahasa yang sesuai era. Semua karakter dan peristiwa adalah FIKSI terinspirasi konteks sejarah. Jangan mengklaim akurasi sejarah absolut.",
+  "rng_seed": 303,
+  "actor_cores": [
+    {
+      "actor_id": "halim",
+      "name": "Halim",
+      "role": "Jurnalis muda koran Kaoem Moeda",
+      "traits": ["ingin tahu", "idealis", "pandai menyamar"],
+      "backstory": "Anak pedagang batik Solo yang merantau ke Batavia untuk menjadi wartawan. Menulis dengan nama samaran di koran pergerakan. Baru menemukan catatan mencurigakan tentang pengiriman senjata yang disamarkan sebagai kargo rempah."
+    },
+    {
+      "actor_id": "meneer_de_vries",
+      "name": "Meneer de Vries",
+      "role": "Kepala gudang VOC Heritage Trading",
+      "traits": ["kalkulatif", "berwibawa", "menyimpan rahasia"],
+      "backstory": "Keturunan Indo-Belanda yang mengelola gudang perdagangan terbesar di pelabuhan. Di balik fasad bisnisnya, ia menjadi perantara gelap antara pedagang senjata dan kelompok yang identitasnya masih misterius."
+    },
+    {
+      "actor_id": "siti_aminah",
+      "name": "Siti Aminah",
+      "role": "Pemilik warung kopi pelabuhan",
+      "traits": ["cerdas", "pendengar ulung", "jaringan informasi luas"],
+      "backstory": "Janda pedagang yang warung kopinya menjadi tempat berkumpul buruh pelabuhan, pelaut, dan sesekali mata-mata. Mendengar banyak bisikan tapi pandai menyimpan rahasia. Diam-diam mendukung pergerakan nasionalis."
+    }
+  ],
+  "initial_state": {
+    "narrative": "Senja di pelabuhan Tanjung Priok, 1928. Bau garam laut bercampur dengan aroma cengkeh dari tumpukan karung di dermaga. Halim berjalan melewati deretan gudang tua sambil mencengkeram lipatan kertas yang ditemukannya tadi pagi di balik papan lantai gudang nomor tujuh. Catatan itu berisi kode-kode angka dan nama kapal \"Koningin der Oceanen\" yang dijadwalkan berlabuh besok subuh. Di ujung dermaga, lampu minyak warung kopi Siti Aminah masih menyala, ditemani suara gramofon samar memutar keroncong. Dari jendela lantai dua gudang VOC Heritage Trading, siluet Meneer de Vries tampak mengamati dermaga dengan teropong kuningan.",
+    "arc_summary": "Halim menemukan catatan misterius di gudang pelabuhan yang menghubungkan kapal Koningin der Oceanen dengan aktivitas mencurigakan.",
+    "actor_states": [
+      {"actor_id": "halim", "mood": 2, "energy": 3, "safety": 2, "social": 3, "esteem": 2, "location": "Dermaga pelabuhan", "ticking_clock": "Kapal tiba besok subuh"},
+      {"actor_id": "meneer_de_vries", "mood": 2, "energy": 3, "safety": 3, "social": 2, "esteem": 4, "location": "Gudang VOC Heritage Trading", "ticking_clock": ""},
+      {"actor_id": "siti_aminah", "mood": 2, "energy": 3, "safety": 3, "social": 4, "esteem": 3, "location": "Warung kopi pelabuhan", "ticking_clock": ""}
+    ],
+    "relation_edges": [
+      {"source_actor_id": "halim", "target_actor_id": "meneer_de_vries", "trust": -2, "affinity": 0, "tension": 3, "bond_event": "Dicurigai terlibat perdagangan gelap"},
+      {"source_actor_id": "meneer_de_vries", "target_actor_id": "halim", "trust": -1, "affinity": 0, "tension": 2, "bond_event": "Wartawan yang terlalu ingin tahu"},
+      {"source_actor_id": "halim", "target_actor_id": "siti_aminah", "trust": 3, "affinity": 2, "tension": 0, "bond_event": "Sering minum kopi sambil mendengar cerita"},
+      {"source_actor_id": "siti_aminah", "target_actor_id": "halim", "trust": 2, "affinity": 2, "tension": 0, "bond_event": "Anak muda yang mengingatkan mendiang suami"},
+      {"source_actor_id": "meneer_de_vries", "target_actor_id": "siti_aminah", "trust": 1, "affinity": 0, "tension": 1, "bond_event": ""},
+      {"source_actor_id": "siti_aminah", "target_actor_id": "meneer_de_vries", "trust": -1, "affinity": -1, "tension": 2, "bond_event": "Pernah melihat transaksi mencurigakan malam hari"}
+    ]
+  }
+}

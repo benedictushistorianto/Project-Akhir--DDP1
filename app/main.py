@@ -21,21 +21,37 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from app.db.connection import init_db
-from app.routers import system
+from app.engine.dag_repo import load_seed_scenario
+from app.routers import scenarios, system, turns
 
 
 # ── Database path (bisa di-override untuk testing) ───────────
 
 DB_PATH = os.environ.get("WHENYHH_DB_PATH", "whenyhh.db")
 
+# Path ke folder seed JSON
+_SEEDS_DIR = os.path.join(os.path.dirname(__file__), "seeds")
 
-# ── Lifespan: init DB saat startup ───────────────────────────
+
+# ── Lifespan: init DB + muat seed saat startup ──────────────
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    """Inisialisasi database dan simpan koneksi di app.state."""
+    """Inisialisasi database, muat 3 seed scenarios, simpan koneksi."""
+    import json as _json
+
     conn = init_db(app.state.db_path)
     app.state.db_conn = conn
+
+    # Muat seed scenarios jika folder ada
+    if os.path.isdir(_SEEDS_DIR):
+        for fname in sorted(os.listdir(_SEEDS_DIR)):
+            if fname.endswith(".json"):
+                fpath = os.path.join(_SEEDS_DIR, fname)
+                with open(fpath, encoding="utf-8") as f:
+                    seed_data = _json.load(f)
+                load_seed_scenario(conn, seed_data)
+
     yield
     conn.close()
 
@@ -63,3 +79,5 @@ if os.path.isdir(_static_dir):
 # ── Include Routers ──────────────────────────────────────────
 
 app.include_router(system.router)
+app.include_router(scenarios.router)
+app.include_router(turns.router)

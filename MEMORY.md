@@ -4,9 +4,9 @@ Perbarui berkas ini setelah keputusan besar, penyelesaian fase, atau penemuan bu
 
 ## Current State
 
-- Current task: Lanjutkan Phase 1 — bangun `dag_repo.py`, `state_mutator.py`, dan router skenario/turn
-- Current phase: Phase 1 - Foundation & Contract (Hari 1-4: 23 Nov - 26 Nov 2026)
-- Next step: Implementasi `app/engine/dag_repo.py` (Recursive CTE lineage, commit_turn, fork_branch), `app/engine/state_mutator.py`, dan router `app/routers/scenarios.py` + `app/routers/turns.py`
+- Current task: Phase 1 selesai secara fungsional; selanjutnya Phase 2 (Context Compiler O(1) + LLM Gateway + Resilience Pipeline)
+- Current phase: Phase 1 DONE -> mulai Phase 2 (Hari 5-9: 27 Nov - 1 Des 2026)
+- Next step: Implementasi `app/engine/context_compiler.py` (Dynamic Context Compiler O(1) <= 2.200 token), `app/engine/sim_pulse.py`, `app/llm/client.py` (OpenAI-compatible), `app/llm/resilience.py` (4-layer pipeline), dan suite `test_context_compiler_o1.py` + `test_llm_resilience.py`
 - Blocked by: none
 
 ## Decisions
@@ -29,12 +29,12 @@ Perbarui berkas ini setelah keputusan besar, penyelesaian fase, atau penemuan bu
 
 - Open decision (TBD 1): Konfirmasi jumlah final anggota kelompok (3 orang atau 4 orang) untuk penyesuaian pembagian Jalur 3 dan Jalur 4.
 - Open decision (TBD 2): Putuskan apakah tim ingin menambahkan `ruff` sebagai linter Python di CI atau cukup `pytest -v`.
-- Catatan lingkungan: `python -m venv .venv`, `pip install -r requirements.txt`, dan `pytest -v` sudah terverifikasi jalan (Python 3.14.10, 18 passed, 0 failed).
+- Catatan lingkungan: `python -m venv .venv`, `pip install -r requirements.txt`, dan `pytest -v` sudah terverifikasi jalan (Python 3.14.10, **49 passed**, 0 failed, 0.71s).
 
 ## Completed
 
-- [x] Phase 1 (Hari 1): Initial scaffold — `.gitignore`, `requirements.txt`, `pyproject.toml`, `.github/workflows/ci.yml`, `app/schemas.py` (kontrak Pydantic v2 lengkap dengan clamping), `app/db/schema.sql` (7 tabel STRICT + 3 indeks), `app/db/connection.py` (WAL + PRAGMA wajib + write_transaction), `app/main.py` (FastAPI lifespan + StaticFiles), `app/routers/system.py` (/healthz, /readyz), `static/index.html` + `static/css/input.css`, `tests/conftest.py` + 3 suite awal (18 passed). Semua `__init__.py` untuk package `app`, `app/db`, `app/engine`, `app/llm`, `app/routers`, `tests`.
-- [ ] Phase 1: Core engine (`dag_repo.py`, `state_mutator.py`) dan router skenario/giliran
+- [x] Phase 1 (Hari 1a): Initial scaffold — `.gitignore`, `requirements.txt`, `pyproject.toml`, `.github/workflows/ci.yml`, `app/schemas.py` (kontrak Pydantic v2 lengkap dengan clamping), `app/db/schema.sql` (7 tabel STRICT + 3 indeks), `app/db/connection.py` (WAL + PRAGMA wajib + write_transaction), `app/main.py` (FastAPI lifespan + StaticFiles), `app/routers/system.py` (/healthz, /readyz), `static/index.html` + `static/css/input.css`, `tests/conftest.py` + 3 suite awal (18 passed).
+- [x] Phase 1 (Hari 1b): Core engine + routers + seeds — `app/engine/dag_repo.py` (get_lineage Recursive CTE, commit_turn, fork_branch, checkout_branch, get_graph, load_seed_scenario), `app/engine/state_mutator.py` (apply_turn_deltas + clamping ganda + anti-halusinasi actor_id), `app/routers/scenarios.py` (GET list/detail/graph/export JSON+MD), `app/routers/turns.py` (POST /api/turns mock, POST fork, POST checkout), 3 seed JSON Bahasa Indonesia (`kampus_anti_scam`, `kebijakan_parkir`, `misteri_pelabuhan_1928`), seed auto-loading di lifespan, `tests/test_engine_integration.py` + `tests/test_seed_scenarios.py` + extended `tests/test_api_contracts.py`. Total: **49 passed, 0 failed** (0.71s).
 - [ ] Phase 2: Externalized State Engine (`dag_repo.py`, `state_mutator.py`, `context_compiler.py` O(1), `sim_pulse.py`)
 - [ ] Phase 2: LLM Gateway & 4-Layer JSON Resilience (`client.py`, `resilience.py`) + Integrasi End-to-End (Hari 9)
 - [ ] Phase 3: Antarmuka Cockpit 3-Pane (Cytoscape Git-DAG, Relasi Bezier, Plotly Telemetri, 3 Seed Scenarios, FAQ, T&C, Ekspor JSON/MD)

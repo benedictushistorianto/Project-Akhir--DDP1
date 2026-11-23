@@ -1,0 +1,47 @@
+{
+  "scenario_id": "kampus_anti_scam",
+  "title": "Mahasiswa vs Penipuan Daring",
+  "premise": "Raka, bendahara panitia wisuda Fasilkom UI, menerima pesan dari seseorang yang mengaku perwakilan vendor dekorasi. Orang itu menawarkan harga sangat murah dengan syarat transfer DP 50% segera ke rekening pribadi. Raka harus memutuskan bagaimana merespons tanpa merugikan keuangan panitia.",
+  "world_rules": "Kamu adalah narator simulasi keputusan interaktif berbahasa Indonesia. Semua aktor adalah fiksi. Jangan pernah menyarankan tindakan ilegal. Jika pengguna tampak dalam situasi nyata, arahkan ke Healing119.id atau CekRekening.id.",
+  "rng_seed": 101,
+  "actor_cores": [
+    {
+      "actor_id": "raka",
+      "name": "Raka",
+      "role": "Bendahara panitia wisuda",
+      "traits": ["hati-hati", "bertanggung jawab", "kurang pengalaman negosiasi"],
+      "backstory": "Mahasiswa semester 3 yang baru pertama kali mengelola dana kepanitiaan besar. Ingin membuktikan diri tapi khawatir membuat kesalahan."
+    },
+    {
+      "actor_id": "vendor_dewi",
+      "name": "Dewi",
+      "role": "Perwakilan vendor (mencurigakan)",
+      "traits": ["persuasif", "mendesak", "menghindari pertanyaan detail"],
+      "backstory": "Mengaku dari CV Mulia Dekor, menawarkan paket lengkap seharga Rp12 juta dengan DP Rp6 juta ke rekening pribadi atas nama berbeda dari CV."
+    },
+    {
+      "actor_id": "ketua_alin",
+      "name": "Alin",
+      "role": "Ketua panitia wisuda",
+      "traits": ["tegas", "berpengalaman organisasi", "protektif terhadap tim"],
+      "backstory": "Mahasiswa semester 5 yang sudah dua kali menjadi ketua panitia. Percaya pada prosedur verifikasi dan tidak mudah terpengaruh tekanan waktu."
+    }
+  ],
+  "initial_state": {
+    "narrative": "Sore hari di ruang sekretariat panitia wisuda Fasilkom. Raka membuka laptop dan menemukan pesan WhatsApp dari nomor tak dikenal yang mengaku sebagai Dewi, perwakilan CV Mulia Dekor. Pesan itu menawarkan paket dekorasi wisuda lengkap seharga Rp12 juta, jauh di bawah penawaran vendor lain yang berkisar Rp18-25 juta. Syaratnya: transfer DP 50% hari ini ke rekening BCA atas nama Hendra Wijaya. Raka mengernyit melihat nama rekening yang berbeda dari nama CV.",
+    "arc_summary": "Raka menerima tawaran vendor mencurigakan dengan harga terlalu murah dan rekening atas nama pribadi.",
+    "actor_states": [
+      {"actor_id": "raka", "mood": 2, "energy": 3, "safety": 2, "social": 3, "esteem": 2, "location": "Sekretariat panitia", "ticking_clock": "Tenggat konfirmasi vendor 3 hari lagi"},
+      {"actor_id": "vendor_dewi", "mood": 3, "energy": 4, "safety": 4, "social": 2, "esteem": 3, "location": "WhatsApp", "ticking_clock": ""},
+      {"actor_id": "ketua_alin", "mood": 2, "energy": 3, "safety": 3, "social": 4, "esteem": 4, "location": "Kelas kuliah", "ticking_clock": ""}
+    ],
+    "relation_edges": [
+      {"source_actor_id": "raka", "target_actor_id": "vendor_dewi", "trust": -1, "affinity": 0, "tension": 2, "bond_event": "Tawaran harga terlalu murah"},
+      {"source_actor_id": "vendor_dewi", "target_actor_id": "raka", "trust": 1, "affinity": 1, "tension": 1, "bond_event": "Target potensial"},
+      {"source_actor_id": "raka", "target_actor_id": "ketua_alin", "trust": 4, "affinity": 3, "tension": 0, "bond_event": ""},
+      {"source_actor_id": "ketua_alin", "target_actor_id": "raka", "trust": 3, "affinity": 2, "tension": 0, "bond_event": ""},
+      {"source_actor_id": "ketua_alin", "target_actor_id": "vendor_dewi", "trust": 0, "affinity": 0, "tension": 0, "bond_event": ""},
+      {"source_actor_id": "vendor_dewi", "target_actor_id": "ketua_alin", "trust": 0, "affinity": 0, "tension": 0, "bond_event": ""}
+    ]
+  }
+}
