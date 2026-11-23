@@ -33,8 +33,11 @@ build/
 Thumbs.db
 desktop.ini
 
-# Tailwind compiled (dev uses CDN; app.css committed only after Hari 13)
-# static/css/app.css
+# static/css/app.css  ← COMMITTED (berisi reset + custom CSS mandiri)
+
+# Tailwind CLI binary (opsional, download sendiri jika perlu)
+tailwindcss.exe
+tailwindcss
 
 # Coverage
 htmlcov/

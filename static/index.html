@@ -1,57 +1,227 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Whenyhh.ai</title>
-  <!-- Tailwind v4 Play CDN (dev only, diganti app.css offline pada Hari 13) -->
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  <style>
-    :root {
-      --bg-canvas: #14161A;
-      --bg-panel: #1B1E24;
-      --bg-elevated: #232730;
-      --border-hairline: #2E333E;
-      --text-primary: #E6E8EC;
-      --text-secondary: #9AA3B2;
-      --text-muted: #707A8C;
-      --accent-primary: #1F9D8B;
-      --accent-primary-hover: #25B4A0;
-      --font-sans: "IBM Plex Sans", "Plus Jakarta Sans", system-ui, sans-serif;
-      --font-mono: "JetBrains Mono", ui-monospace, monospace;
-    }
-    body {
-      font-family: var(--font-sans);
-      background: var(--bg-canvas);
-      color: var(--text-primary);
-      margin: 0;
-      min-height: 100vh;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-      }
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Whenyhh.ai — Workbench Skenario Bercabang</title>
+  <meta name="description" content="Visualisasi skenario bercabang dengan Git-DAG, simulasi What-If, dan roleplay interaktif berbasis LLM lokal." />
+
+  <!-- Fonts (offline-safe: sistem fallback) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/static/css/app.css" />
+
+  <!-- Vendor JS (offline) -->
+  <script src="/static/vendor/lucide.min.js"></script>
+  <script src="/static/vendor/dompurify.min.js"></script>
+  <script src="/static/vendor/marked.min.js"></script>
+  <script src="/static/vendor/dagre.min.js"></script>
+  <script src="/static/vendor/cytoscape.min.js"></script>
+  <script src="/static/vendor/cytoscape-dagre.min.js"></script>
+  <script src="/static/vendor/plotly.min.js"></script>
 </head>
 <body>
-  <header style="background: var(--bg-panel); border-bottom: 1px solid var(--border-hairline); padding: 12px 20px; display: flex; align-items: center; gap: 16px;">
-    <h1 style="font-size: 18px; font-weight: 700; margin: 0; color: var(--accent-primary);">Whenyhh.ai</h1>
-    <span style="color: var(--text-muted); font-size: 13px;">Workbench Skenario Bercabang</span>
-  </header>
 
-  <main style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 48px); padding: 32px;">
-    <div style="text-align: center; max-width: 480px;">
-      <p style="color: var(--text-secondary); font-size: 15px; line-height: 1.6; margin-bottom: 16px;">
-        Scaffold berhasil. Server berjalan di
-        <code style="font-family: var(--font-mono); color: var(--accent-primary); background: var(--bg-elevated); padding: 2px 6px; border-radius: 4px;">127.0.0.1:8000</code>
-      </p>
-      <p style="color: var(--text-muted); font-size: 13px;">
-        Antarmuka cockpit 3-pane akan dibangun di Phase 3.
+<!-- ══════════════════════════════════════════════════════════
+     T&C Modal Gate — wajib disetujui sebelum aplikasi berjalan
+════════════════════════════════════════════════════════════ -->
+<div id="tnc-modal" class="modal-backdrop hidden">
+  <div class="modal-box" style="max-width:580px;">
+    <p class="modal-title">Syarat &amp; Ketentuan Penggunaan Whenyhh.ai</p>
+    <div class="tnc-content">
+      <h3>1. Perlindungan Data Pribadi (UU PDP No. 27/2022)</h3>
+      <p>Aplikasi ini berjalan sepenuhnya di perangkat lokal Anda. Tidak ada data skenario, narasi, atau identitas pengguna yang dikirim ke server eksternal tanpa izin Anda. Jika Anda mengaktifkan penyedia cloud (Groq, OpenRouter, atau lainnya), konten aksi dan narasi akan dikirim ke penyedia tersebut sesuai kebijakan privasi masing-masing.</p>
+
+      <h3>2. Kunci API (SE Menkominfo No. 9/2023)</h3>
+      <p>Kunci API yang Anda masukkan hanya disimpan di <code>sessionStorage</code> peramban dan hilang otomatis saat tab ditutup. Kunci tidak pernah disimpan di basis data, log server, atau dikirim ke pihak lain selain penyedia LLM yang Anda pilih.</p>
+
+      <h3>3. Konten Simulasi &amp; Disclaimer</h3>
+      <ul>
+        <li>Konten yang dihasilkan LLM bersifat fiksi dan tidak mencerminkan pandangan tim pengembang.</li>
+        <li>Jika simulasi menyinggung topik kesehatan jiwa, hubungi <strong>Hotline Healing119.id</strong> (119 ext. 8) atau konselor terdekat.</li>
+        <li>Untuk verifikasi rekening terduga penipuan, gunakan <strong>CekRekening.id</strong> (cekrekening.id) atau laporkan ke IASC OJK (ojk.go.id/id/kanal/iknb/laporan-dan-statistik/asuransi/Pages/IASC.aspx).</li>
+      </ul>
+
+      <h3>4. Batasan Penggunaan</h3>
+      <p>Aplikasi ini ditujukan untuk keperluan edukasi, penelitian, dan kreasi konten fiksi. Dilarang menggunakannya untuk membuat konten yang melanggar hukum, menyebarkan disinformasi, atau merugikan pihak lain.</p>
+
+      <p style="margin-top:14px; color: var(--text-muted); font-size:11px;">
+        Proyek Kelompok DDP1 Fasilkom UI &mdash; Deadline 10 Desember 2026
       </p>
     </div>
+    <button id="tnc-accept-btn" class="btn-primary" style="width:100%;">
+      Saya Setuju dan Lanjutkan
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     Fork Modal
+════════════════════════════════════════════════════════════ -->
+<div id="fork-modal" class="modal-backdrop hidden">
+  <div class="modal-box">
+    <p class="modal-title">Buat Cabang Baru</p>
+    <p id="fork-node-label" class="text-secondary text-sm mb-3">Dari simpul yang dipilih</p>
+    <label class="form-label" for="fork-branch-name">Nama Cabang</label>
+    <input id="fork-branch-name" class="form-input" type="text" placeholder="cabang-baru" />
+    <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:4px;">
+      <button id="fork-cancel-btn" class="btn-ghost">Batal</button>
+      <button id="fork-confirm-btn" class="btn-primary">Buat Cabang</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     LLM Config Modal
+════════════════════════════════════════════════════════════ -->
+<div id="llm-config-modal" class="modal-backdrop hidden">
+  <div class="modal-box">
+    <p class="modal-title">Konfigurasi Provider LLM</p>
+
+    <label class="form-label" for="llm-provider-select">Provider</label>
+    <select id="llm-provider-select" class="form-select">
+      <option value="mock">Mock (offline, untuk demo)</option>
+      <option value="ollama">Ollama Lokal (127.0.0.1:11434)</option>
+      <option value="lmstudio">LM Studio Lokal (127.0.0.1:1234)</option>
+      <option value="groq">Groq Cloud (memerlukan kunci API)</option>
+      <option value="openrouter">OpenRouter :free (memerlukan kunci API)</option>
+      <option value="byom">BYOM / Custom (tentukan URL sendiri)</option>
+    </select>
+
+    <label class="form-label" for="llm-base-url-input">Base URL (opsional)</label>
+    <input id="llm-base-url-input" class="form-input" type="text"
+           placeholder="https://api.groq.com/openai/v1" />
+
+    <label class="form-label" for="llm-model-input">Nama Model</label>
+    <input id="llm-model-input" class="form-input" type="text"
+           placeholder="qwen2.5:7b / llama-3.1-8b-instant / dll." />
+
+    <label class="form-label" for="llm-api-key-input">Kunci API</label>
+    <input id="llm-api-key-input" class="form-input" type="password"
+           autocomplete="off" placeholder="Masukkan kunci API (opsional untuk lokal)" />
+    <p id="llm-api-key-hint" class="form-hint">Provider lokal tidak memerlukan kunci API.</p>
+
+    <div style="display:flex; gap:8px; align-items:center; margin-bottom:12px;">
+      <button id="llm-test-btn" class="btn-ghost" style="font-size:12px;">Uji Koneksi</button>
+      <span id="llm-test-status" class="text-muted" style="font-size:12px;"></span>
+    </div>
+
+    <div style="display:flex; gap:8px; justify-content:flex-end;">
+      <button id="llm-config-cancel-btn" class="btn-ghost">Batal</button>
+      <button id="llm-config-save-btn" class="btn-primary">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     Aplikasi Utama — Cockpit 3-Pane
+════════════════════════════════════════════════════════════ -->
+<div class="cockpit-layout">
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <span class="topbar-logo">whenyhh.ai</span>
+    <span class="topbar-title" id="scenario-title">Pilih skenario</span>
+
+    <button id="export-json-btn" class="icon-btn" title="Ekspor JSON">
+      <i data-lucide="download" style="width:14px;height:14px;"></i>
+      JSON
+    </button>
+    <button id="export-md-btn" class="icon-btn" title="Ekspor Markdown">
+      <i data-lucide="file-text" style="width:14px;height:14px;"></i>
+      MD
+    </button>
+    <button id="llm-config-btn" class="icon-btn" title="Konfigurasi LLM">
+      <i data-lucide="settings" style="width:14px;height:14px;"></i>
+      LLM
+    </button>
+  </header>
+
+  <!-- Sidebar Skenario -->
+  <aside class="sidebar">
+    <span class="sidebar-section-label">Skenario</span>
+    <ul id="scenario-list">
+      <li class="text-muted text-sm px-2 py-1">Memuat...</li>
+    </ul>
+
+    <hr class="divider" style="margin:4px 12px;" />
+
+    <span class="sidebar-section-label">Cabang</span>
+    <div id="branch-list" style="padding:4px 12px 10px; display:flex; flex-wrap:wrap;"></div>
+  </aside>
+
+  <!-- DAG Pane -->
+  <main class="dag-pane">
+    <div class="dag-toolbar">
+      <span class="text-muted" style="font-size:11px; font-family: var(--font-mono);">
+        Git-DAG
+      </span>
+      <span style="flex:1;"></span>
+      <span class="text-muted" style="font-size:11px;">Klik kanan simpul untuk fork</span>
+    </div>
+    <div id="dag-container"></div>
   </main>
+
+  <!-- Detail Pane -->
+  <aside class="detail-pane">
+    <!-- Fallback badge -->
+    <div id="fallback-badge" class="hidden" style="margin:10px 14px 0;">
+      <i data-lucide="alert-triangle" style="width:12px;height:12px;"></i>
+      Model fallback aktif
+    </div>
+
+    <!-- Narasi & pilihan -->
+    <div class="detail-scroll">
+      <div id="narrative-text" class="text-secondary" style="font-size:13px;">
+        Pilih simpul di DAG untuk melihat narasi dan pilihan aksi.
+      </div>
+      <hr class="divider" />
+      <div id="choices-container"></div>
+    </div>
+
+    <!-- Input aksi -->
+    <div class="detail-actions">
+      <textarea id="action-input" placeholder="Ketik aksi Anda, atau pilih dari opsi di atas..."></textarea>
+      <div style="display:flex; gap:8px;">
+        <button id="action-submit-btn" class="btn-primary" style="flex:1;">
+          Jalankan aksi
+        </button>
+        <button id="fork-btn" class="btn-ghost" title="Fork dari simpul ini">
+          <i data-lucide="git-branch" style="width:14px;height:14px;"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Bottom: Tabs Relasi + Telemetri -->
+  <section class="bottom-pane">
+    <div class="tab-bar">
+      <button class="tab-btn tab-active" data-tab="relation">
+        <i data-lucide="users" style="width:12px;height:12px; vertical-align:-1px;"></i>
+        Relasi Aktor
+      </button>
+      <button class="tab-btn" data-tab="telemetry">
+        <i data-lucide="bar-chart-2" style="width:12px;height:12px; vertical-align:-1px;"></i>
+        Token Budget
+      </button>
+    </div>
+    <div data-pane="relation">
+      <div id="relation-container"></div>
+    </div>
+    <div data-pane="telemetry" class="hidden">
+      <div id="telemetry-container"></div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Notification Banner -->
+<div id="notif-banner" class="notif-banner hidden"></div>
+
+<!-- App Module -->
+<script type="module" src="/static/js/app.js"></script>
+
 </body>
 </html>

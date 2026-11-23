@@ -11,14 +11,18 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, Request
 
+from app.engine.context_compiler import compile_context
 from app.engine.dag_repo import (
     checkout_branch,
     commit_turn,
     fork_branch,
-    get_node_state,
+    get_lineage,
     get_lineage_anchors,
+    get_node_state,
 )
 from app.engine.state_mutator import apply_turn_deltas
+from app.llm.client import make_client
+from app.llm.resilience import run_turn_pipeline
 from app.schemas import (
     CheckoutRequest,
     ForkRequest,
@@ -46,10 +50,12 @@ async def execute_turn(body: TurnRequest, request: Request) -> dict:
 
     Alur:
     1. Validasi skenario, branch, dan parent_node ada.
-    2. Panggil LLM (Phase 2: untuk sekarang pakai MockLLMAdapter).
-    3. apply_turn_deltas() menerapkan delta ke state induk.
-    4. commit_turn() menyimpan simpul baru ke SQLite.
-    5. Kembalikan NodeDTO.
+    2. compile_context() merakit paket O(1) <= 2.200 token.
+    3. make_client() memilih provider (mock/ollama/lmstudio/byom).
+    4. run_turn_pipeline() menjalankan pipa ketahanan 4 lapis;
+       gagal total -> Deterministic Safe Fallback (HTTP tetap 200).
+    5. apply_turn_deltas() + commit_turn() menyimpan simpul baru.
+    6. Kembalikan NodeDTO lengkap dengan telemetri token & latensi.
     """
     conn = request.app.state.db_conn
 
@@ -77,28 +83,37 @@ async def execute_turn(body: TurnRequest, request: Request) -> dict:
     if parent is None:
         raise HTTPException(status_code=404, detail="Parent node tidak ditemukan")
 
-    # ── Mock LLM Response (Phase 2 akan mengganti ini) ───────
-    # Gunakan mock_llm_handler dari app.state jika ada,
-    # atau fallback ke respons default.
-    mock_handler = getattr(request.app.state, "mock_llm_handler", None)
-    if mock_handler is not None:
-        turn_response = mock_handler(body)
-    else:
-        turn_response = TurnResponse(
-            narrative=(
-                f"Skenario berlanjut. Pengguna memilih: {body.user_action}. "
-                "Situasi berkembang sesuai dinamika karakter."
-            ),
-            actor_deltas=[],
-            relation_deltas=[],
-            new_anchor=None,
-            updated_arc_summary="Skenario berjalan.",
-            suggested_choices=[
-                "Lanjutkan dialog",
-                "Ubah pendekatan",
-                "Minta pendapat aktor lain",
-            ],
-        )
+    # ── Phase 2: Compiler O(1) -> LLM Gateway -> Pipa 4 Lapis ─
+    compiled = compile_context(
+        conn,
+        scenario_id=body.scenario_id,
+        parent_node_id=body.parent_node_id,
+        user_action=body.user_action,
+    )
+
+    # Narasi bersih terakhir (untuk Deterministic Safe Fallback)
+    lineage_ids = list(reversed(get_lineage(conn, body.parent_node_id)))
+    recent_narrative = ""
+    if lineage_ids:
+        placeholders = ",".join("?" * len(lineage_ids[-2:]))
+        rows = conn.execute(
+            f"SELECT narrative FROM nodes WHERE node_id IN ({placeholders}) "
+            "ORDER BY turn_index",
+            lineage_ids[-2:],
+        ).fetchall()
+        recent_narrative = rows[-1]["narrative"] if rows else ""
+
+    # Pilih klien: mock untuk pytest; provider lain -> OpenAI-compatible
+    api_key = request.headers.get("X-LLM-API-Key", "")
+    client = make_client(body.llm_config, api_key=api_key)
+
+    outcome = run_turn_pipeline(
+        client,
+        compiled.messages,
+        body.llm_config,
+        rescued_narrative=recent_narrative,
+    )
+    turn_response = outcome.turn_response
 
     # ── Apply deltas + commit ────────────────────────────────
     valid_ids = _get_valid_actor_ids(conn, body.scenario_id)
@@ -116,15 +131,14 @@ async def execute_turn(body: TurnRequest, request: Request) -> dict:
         turn_response=turn_response,
         actor_states=new_states,
         relation_edges=new_edges,
-        prompt_tokens=0,
-        completion_tokens=0,
-        latency_ms=0,
-        is_fallback=False,
+        prompt_tokens=outcome.prompt_tokens,
+        completion_tokens=outcome.completion_tokens,
+        latency_ms=outcome.latency_ms,
+        is_fallback=outcome.is_fallback,
     )
 
     # ── Bangun NodeDTO respons ───────────────────────────────
-    from app.engine.dag_repo import get_node_state as _gns
-    a_states, r_edges = _gns(conn, node_id)
+    a_states, r_edges = get_node_state(conn, node_id)
 
     # Ambil jangkar baru jika ada
     new_anchor_dto = None
@@ -156,10 +170,10 @@ async def execute_turn(body: TurnRequest, request: Request) -> dict:
         user_action=body.user_action,
         narrative=turn_response.narrative,
         arc_summary=turn_response.updated_arc_summary,
-        prompt_tokens=0,
-        completion_tokens=0,
-        latency_ms=0,
-        is_fallback=False,
+        prompt_tokens=outcome.prompt_tokens,
+        completion_tokens=outcome.completion_tokens,
+        latency_ms=outcome.latency_ms,
+        is_fallback=outcome.is_fallback,
         actor_states=a_states,
         relation_edges=r_edges,
         new_anchor=new_anchor_dto,

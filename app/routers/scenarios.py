@@ -58,7 +58,7 @@ async def get_scenario_graph(scenario_id: str, request: Request) -> dict:
 async def export_scenario(
     scenario_id: str,
     request: Request,
-    format: str = Query("json", pattern="^(json|md)$"),
+    format: str = Query("json", pattern="^(json|md|markdown)$"),
 ) -> Response:
     """Ekspor skenario ke JSON atau Markdown untuk unduhan lokal."""
     conn = request.app.state.db_conn

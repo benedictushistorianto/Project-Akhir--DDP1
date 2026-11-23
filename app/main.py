@@ -18,6 +18,7 @@ from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.db.connection import init_db
@@ -81,3 +82,14 @@ if os.path.isdir(_static_dir):
 app.include_router(system.router)
 app.include_router(scenarios.router)
 app.include_router(turns.router)
+
+
+# ── Root Route → index.html ──────────────────────────────────
+
+_index_html = os.path.join(os.path.dirname(__file__), "..", "static", "index.html")
+
+
+@app.get("/", include_in_schema=False)
+async def serve_root():
+    """Sajikan index.html sebagai SPA entry point."""
+    return FileResponse(_index_html, media_type="text/html")
