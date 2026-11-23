@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+:root {
+  /* 60-30-10 Neutral Dark Charcoal Surface (no pure #000) */
+  --bg-canvas: #14161A;
+  --bg-panel: #1B1E24;
+  --bg-elevated: #232730;
+  --border-hairline: #2E333E;
+
+  /* Text (WCAG AA >= 4.5:1 on #1B1E24) */
+  --text-primary: #E6E8EC;
+  --text-secondary: #9AA3B2;
+  --text-muted: #707A8C;
+
+  /* Single Brand Accent (Non-Purple Teal) */
+  --accent-primary: #1F9D8B;
+  --accent-primary-hover: #25B4A0;
+
+  /* Functional Semantic & DAG Swimlane Colors */
+  --lane-main: #2DD4BF;
+  --lane-branch-2: #38BDF8;
+  --lane-branch-3: #F59E0B;
+  --lane-branch-4: #FB7185;
+  --status-warn: #D97706;
+  --status-danger: #E11D48;
+
+  /* Typography */
+  --font-sans: "IBM Plex Sans", "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* Mandatory Accessibility Motion Guard */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

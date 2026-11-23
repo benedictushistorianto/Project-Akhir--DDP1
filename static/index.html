@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whenyhh.ai</title>
+  <!-- Tailwind v4 Play CDN (dev only, diganti app.css offline pada Hari 13) -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    :root {
+      --bg-canvas: #14161A;
+      --bg-panel: #1B1E24;
+      --bg-elevated: #232730;
+      --border-hairline: #2E333E;
+      --text-primary: #E6E8EC;
+      --text-secondary: #9AA3B2;
+      --text-muted: #707A8C;
+      --accent-primary: #1F9D8B;
+      --accent-primary-hover: #25B4A0;
+      --font-sans: "IBM Plex Sans", "Plus Jakarta Sans", system-ui, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, monospace;
+    }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-canvas);
+      color: var(--text-primary);
+      margin: 0;
+      min-height: 100vh;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header style="background: var(--bg-panel); border-bottom: 1px solid var(--border-hairline); padding: 12px 20px; display: flex; align-items: center; gap: 16px;">
+    <h1 style="font-size: 18px; font-weight: 700; margin: 0; color: var(--accent-primary);">Whenyhh.ai</h1>
+    <span style="color: var(--text-muted); font-size: 13px;">Workbench Skenario Bercabang</span>
+  </header>
+
+  <main style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 48px); padding: 32px;">
+    <div style="text-align: center; max-width: 480px;">
+      <p style="color: var(--text-secondary); font-size: 15px; line-height: 1.6; margin-bottom: 16px;">
+        Scaffold berhasil. Server berjalan di
+        <code style="font-family: var(--font-mono); color: var(--accent-primary); background: var(--bg-elevated); padding: 2px 6px; border-radius: 4px;">127.0.0.1:8000</code>
+      </p>
+      <p style="color: var(--text-muted); font-size: 13px;">
+        Antarmuka cockpit 3-pane akan dibangun di Phase 3.
+      </p>
+    </div>
+  </main>
+</body>
+</html>

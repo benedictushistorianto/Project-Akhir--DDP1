@@ -4,10 +4,10 @@ Perbarui berkas ini setelah keputusan besar, penyelesaian fase, atau penemuan bu
 
 ## Current State
 
-- Current task: Initial project scaffold, repo setup, dan verifikasi environment lokal (Phase 1 - Hari 1)
+- Current task: Lanjutkan Phase 1 — bangun `dag_repo.py`, `state_mutator.py`, dan router skenario/turn
 - Current phase: Phase 1 - Foundation & Contract (Hari 1-4: 23 Nov - 26 Nov 2026)
-- Next step: Pasang spend cap $95 di Anthropic Console, buat struktur folder, `.gitignore`, `requirements.txt`, `app/schemas.py` (target Schema Freeze Hari 2), serta verifikasi `pytest` dan Ollama lokal 8GB
-- Blocked by: none (keputusan terbuka non-blocking: kepastian jumlah anggota 3 vs 4 orang dan penggunaan linter `ruff`)
+- Next step: Implementasi `app/engine/dag_repo.py` (Recursive CTE lineage, commit_turn, fork_branch), `app/engine/state_mutator.py`, dan router `app/routers/scenarios.py` + `app/routers/turns.py`
+- Blocked by: none
 
 ## Decisions
 
@@ -29,12 +29,12 @@ Perbarui berkas ini setelah keputusan besar, penyelesaian fase, atau penemuan bu
 
 - Open decision (TBD 1): Konfirmasi jumlah final anggota kelompok (3 orang atau 4 orang) untuk penyesuaian pembagian Jalur 3 dan Jalur 4.
 - Open decision (TBD 2): Putuskan apakah tim ingin menambahkan `ruff` sebagai linter Python di CI atau cukup `pytest -v`.
-- Catatan lingkungan: Seluruh perintah CLI (`setup`, `dev`, `test`, `build`) belum dijalankan di repo aktual (status: unverified).
+- Catatan lingkungan: `python -m venv .venv`, `pip install -r requirements.txt`, dan `pytest -v` sudah terverifikasi jalan (Python 3.14.10, 18 passed, 0 failed).
 
 ## Completed
 
-- [ ] Phase 1: Spend cap $95 di Anthropic Console, initial scaffold, `.gitignore`, CI GitHub Actions, dan Schema Freeze `app/schemas.py`
-- [ ] Phase 1: Core SQLite WAL + `STRICT` data model (`schema.sql`, `connection.py`) dan verifikasi Ollama lokal
+- [x] Phase 1 (Hari 1): Initial scaffold — `.gitignore`, `requirements.txt`, `pyproject.toml`, `.github/workflows/ci.yml`, `app/schemas.py` (kontrak Pydantic v2 lengkap dengan clamping), `app/db/schema.sql` (7 tabel STRICT + 3 indeks), `app/db/connection.py` (WAL + PRAGMA wajib + write_transaction), `app/main.py` (FastAPI lifespan + StaticFiles), `app/routers/system.py` (/healthz, /readyz), `static/index.html` + `static/css/input.css`, `tests/conftest.py` + 3 suite awal (18 passed). Semua `__init__.py` untuk package `app`, `app/db`, `app/engine`, `app/llm`, `app/routers`, `tests`.
+- [ ] Phase 1: Core engine (`dag_repo.py`, `state_mutator.py`) dan router skenario/giliran
 - [ ] Phase 2: Externalized State Engine (`dag_repo.py`, `state_mutator.py`, `context_compiler.py` O(1), `sim_pulse.py`)
 - [ ] Phase 2: LLM Gateway & 4-Layer JSON Resilience (`client.py`, `resilience.py`) + Integrasi End-to-End (Hari 9)
 - [ ] Phase 3: Antarmuka Cockpit 3-Pane (Cytoscape Git-DAG, Relasi Bezier, Plotly Telemetri, 3 Seed Scenarios, FAQ, T&C, Ekspor JSON/MD)
